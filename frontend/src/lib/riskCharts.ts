@@ -7,6 +7,10 @@ import type {
 import { toRiskLevel, type ForecastPoint, type RiskLevel } from "@/domain/risk";
 import { USYD_ORANGE_HEX } from "@/config/uiColors";
 import {
+  formatForecastMinutesLabel,
+  parseForecastTimeToMinutes,
+} from "@/lib/forecastTime";
+import {
   getRiskBands,
   getRiskColor,
   RISK_DISPLAY_AXIS_MAX,
@@ -19,7 +23,6 @@ const FORECAST_VISUAL_SERIES_ID = "forecast-visual-line";
 const FORECAST_POINT_SERIES_ID = "forecast-data-points";
 const FORECAST_TOOLTIP_SERIES_ID = "forecast-tooltip-line";
 const FORECAST_HIGHLIGHT_SERIES_ID = "forecast-highlight-point";
-const FORECAST_HOUR_MINUTE_PATTERN = /^([01]\d|2[0-3]):([0-5]\d)$/;
 const FORECAST_DISPLAY_PRECISION = 1;
 const FORECAST_AXIS_ALIGNMENT_EPSILON = 0.001;
 const FORECAST_POINT_SYMBOL_SIZE = 6;
@@ -91,32 +94,6 @@ function getTypography(isMobile: boolean): ChartTypography {
 
 function getBandUpperValue(value: number, upper: number): number {
   return Math.max(0, Math.min(value, upper));
-}
-
-function parseForecastTimeToMinutes(rawTime: string): number | null {
-  const match = FORECAST_HOUR_MINUTE_PATTERN.exec(rawTime);
-  if (!match) {
-    return null;
-  }
-
-  return Number(match[1]) * 60 + Number(match[2]);
-}
-
-function formatForecastMinutesLabel(rawMinutes: number): string {
-  const roundedMinutes = Math.round(rawMinutes);
-  const minutesInDay = 24 * 60;
-  const normalizedMinutes =
-    ((roundedMinutes % minutesInDay) + minutesInDay) % minutesInDay;
-  const hour24 = Math.floor(normalizedMinutes / 60);
-  const minute = normalizedMinutes % 60;
-  const meridiem = hour24 >= 12 ? "PM" : "AM";
-  const hour12 = hour24 % 12 || 12;
-
-  if (minute === 0) {
-    return `${hour12} ${meridiem}`;
-  }
-
-  return `${hour12}:${String(minute).padStart(2, "0")} ${meridiem}`;
 }
 
 function toForecastCoordinatePoints(
