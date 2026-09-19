@@ -332,7 +332,7 @@
       "yAxisRiskName": "风险",
       "tooltipRiskLabel": "风险",
       "a11y": {
-        "chartLabel": "{{day}}的热应激风险预报。最高为 {{peakTime}} 的{{peakLevel}}。开始时为{{startLevel}}，结束时为{{endLevel}}。",
+        "chartLabel": "{{day}}的热应激风险预报。风险在 {{peakTime}} 达到最高，为{{peakLevel}}。预报开始时为{{startLevel}}，结束时为{{endLevel}}。",
         "tableCaption": "{{day}}的逐小时热应激风险",
         "timeHeader": "时间",
         "levelHeader": "风险等级",

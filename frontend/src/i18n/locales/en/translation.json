@@ -332,7 +332,7 @@
       "yAxisRiskName": "Risk",
       "tooltipRiskLabel": "Risk",
       "a11y": {
-        "chartLabel": "Heat risk forecast for {{day}}. Peak {{peakLevel}} at {{peakTime}}. Starts {{startLevel}}, ends {{endLevel}}.",
+        "chartLabel": "Heat risk forecast for {{day}}. Peak risk is {{peakLevel}} at {{peakTime}}. Risk starts at {{startLevel}} and ends at {{endLevel}}.",
         "tableCaption": "Hourly heat risk for {{day}}",
         "timeHeader": "Time",
         "levelHeader": "Risk level",

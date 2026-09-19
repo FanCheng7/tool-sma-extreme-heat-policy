@@ -1,4 +1,8 @@
-import type { ForecastPoint, RiskLevel } from "@/domain/risk";
+import { toRiskLevel, type ForecastPoint, type RiskLevel } from "@/domain/risk";
+import {
+  formatForecastMinutesLabel,
+  parseForecastTimeToMinutes,
+} from "@/lib/forecastTime";
 
 /**
  * One hour of the forecast, expressed for a screen-reader text alternative.
@@ -36,11 +40,38 @@ export interface ForecastSummary {
  * `timeHeader` / `levelHeader` / `valueHeader` column labels for the visually
  * hidden hourly table.
  *
- * TODO(#71): implement. Ties should resolve to the earliest row so the peak is
- * reported at the time it is first reached.
+ * Points retain their forecast order. Ties resolve to the first occurrence,
+ * comparing raw scores before rounding. Time offsets follow the chart, including
+ * its hourly fallback for labels that do not advance (for example at midnight).
  */
 export function buildForecastSummary(points: ForecastPoint[]): ForecastSummary {
-  throw new Error(
-    `buildForecastSummary is not implemented yet (received ${points.length} points).`,
-  );
+  let previousMinuteOffset = -1;
+  let peakIndex = -1;
+  const rows = points.map((point, index): ForecastSummaryRow => {
+    const parsedMinutes = parseForecastTimeToMinutes(point.time);
+    const minuteOffset =
+      parsedMinutes !== null && parsedMinutes > previousMinuteOffset
+        ? parsedMinutes
+        : previousMinuteOffset < 0
+          ? (parsedMinutes ?? 0)
+          : previousMinuteOffset + 60;
+    previousMinuteOffset = minuteOffset;
+
+    if (peakIndex === -1 || point.value > points[peakIndex].value) {
+      peakIndex = index;
+    }
+
+    return {
+      time: formatForecastMinutesLabel(minuteOffset),
+      level: toRiskLevel(point.value),
+      displayValue: Number(point.value.toFixed(1)),
+    };
+  });
+
+  return {
+    rows,
+    peak: rows[peakIndex] ?? null,
+    first: rows[0] ?? null,
+    last: rows.at(-1) ?? null,
+  };
 }
