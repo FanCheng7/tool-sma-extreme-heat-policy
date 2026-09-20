@@ -33,3 +33,28 @@ export function formatForecastMinutesLabel(rawMinutes: number): string {
 
   return `${hour12}:${String(minute).padStart(2, "0")} ${meridiem}`;
 }
+
+/**
+ * Maps a day's `HH:MM` forecast labels onto minutes past local midnight.
+ *
+ * A label that is malformed, or that does not advance on the previous one
+ * (a day wrapping past midnight, for example), falls back to one hour after
+ * its predecessor, so the sequence stays strictly increasing and plottable.
+ */
+export function toForecastMinuteOffsets(times: readonly string[]): number[] {
+  let previousMinuteOffset = -1;
+
+  return times.map((time) => {
+    const parsedMinuteOffset = parseForecastTimeToMinutes(time);
+    const minuteOffset =
+      parsedMinuteOffset !== null && parsedMinuteOffset > previousMinuteOffset
+        ? parsedMinuteOffset
+        : previousMinuteOffset < 0
+          ? (parsedMinuteOffset ?? 0)
+          : previousMinuteOffset + 60;
+
+    previousMinuteOffset = minuteOffset;
+
+    return minuteOffset;
+  });
+}

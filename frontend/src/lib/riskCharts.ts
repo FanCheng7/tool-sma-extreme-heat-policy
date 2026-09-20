@@ -9,6 +9,7 @@ import { USYD_ORANGE_HEX } from "@/config/uiColors";
 import {
   formatForecastMinutesLabel,
   parseForecastTimeToMinutes,
+  toForecastMinuteOffsets,
 } from "@/lib/forecastTime";
 import {
   getRiskBands,
@@ -99,29 +100,15 @@ function getBandUpperValue(value: number, upper: number): number {
 function toForecastCoordinatePoints(
   points: ForecastPoint[],
 ): ForecastChartPoint[] {
-  if (points.length === 0) {
-    return [];
-  }
+  const minuteOffsets = toForecastMinuteOffsets(
+    points.map((point) => point.time),
+  );
 
-  let previousMinuteOffset = -1;
-
-  return points.map<ForecastChartPoint>((point) => {
-    const parsedMinuteOffset = parseForecastTimeToMinutes(point.time);
-    const minuteOffset =
-      parsedMinuteOffset !== null && parsedMinuteOffset > previousMinuteOffset
-        ? parsedMinuteOffset
-        : previousMinuteOffset < 0
-          ? (parsedMinuteOffset ?? 0)
-          : previousMinuteOffset + 60;
-
-    previousMinuteOffset = minuteOffset;
-
-    return {
-      ...point,
-      displayValue: toRiskDisplayScore(point.value) ?? 0,
-      minuteOffset,
-    };
-  });
+  return points.map<ForecastChartPoint>((point, index) => ({
+    ...point,
+    displayValue: toRiskDisplayScore(point.value) ?? 0,
+    minuteOffset: minuteOffsets[index],
+  }));
 }
 
 function toForecastChartPoints(

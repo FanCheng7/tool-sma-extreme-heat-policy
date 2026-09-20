@@ -1,7 +1,7 @@
 import { toRiskLevel, type ForecastPoint, type RiskLevel } from "@/domain/risk";
 import {
   formatForecastMinutesLabel,
-  parseForecastTimeToMinutes,
+  toForecastMinuteOffsets,
 } from "@/lib/forecastTime";
 
 /**
@@ -45,24 +45,17 @@ export interface ForecastSummary {
  * its hourly fallback for labels that do not advance (for example at midnight).
  */
 export function buildForecastSummary(points: ForecastPoint[]): ForecastSummary {
-  let previousMinuteOffset = -1;
+  const minuteOffsets = toForecastMinuteOffsets(
+    points.map((point) => point.time),
+  );
   let peakIndex = -1;
   const rows = points.map((point, index): ForecastSummaryRow => {
-    const parsedMinutes = parseForecastTimeToMinutes(point.time);
-    const minuteOffset =
-      parsedMinutes !== null && parsedMinutes > previousMinuteOffset
-        ? parsedMinutes
-        : previousMinuteOffset < 0
-          ? (parsedMinutes ?? 0)
-          : previousMinuteOffset + 60;
-    previousMinuteOffset = minuteOffset;
-
     if (peakIndex === -1 || point.value > points[peakIndex].value) {
       peakIndex = index;
     }
 
     return {
-      time: formatForecastMinutesLabel(minuteOffset),
+      time: formatForecastMinutesLabel(minuteOffsets[index]),
       level: toRiskLevel(point.value),
       displayValue: Number(point.value.toFixed(1)),
     };
