@@ -325,7 +325,11 @@
     "gauge": {
       "seriesName": "热应激风险",
       "riskLabel": "热应激风险",
-      "riskUnavailable": "暂无"
+      "riskUnavailable": "暂无",
+      "a11y": {
+        "label": "{{title}}：{{value}}（满分 {{max}}），{{level}}。",
+        "labelUnavailable": "{{title}}：暂无数据。"
+      }
     },
     "forecast": {
       "xAxisName": "时间",

@@ -12,7 +12,7 @@ import { EChart } from "@/components/ui/EChart";
 
 interface RiskGaugeProps {
   score: number;
-  title: string;
+  ariaLabel: string;
   unavailableLabel: string;
   riskLevelLabels: Record<RiskLevel, string>;
 }
@@ -66,10 +66,14 @@ function useMeasuredWidth() {
 
 /**
  * Renders the current-risk gauge using ECharts, tuned to resemble the legacy half-circle design.
+ *
+ * The score is painted onto a canvas and the centre value is hidden from
+ * assistive technology, so `ariaLabel` is the only route to that reading and
+ * has to carry it in full.
  */
 export function RiskGauge({
   score,
-  title,
+  ariaLabel,
   unavailableLabel,
   riskLevelLabels,
 }: RiskGaugeProps) {
@@ -91,7 +95,7 @@ export function RiskGauge({
     <Box
       ref={containerRef}
       role="img"
-      aria-label={title}
+      aria-label={ariaLabel}
       style={{
         position: "relative",
         width: "100%",

@@ -325,7 +325,11 @@
     "gauge": {
       "seriesName": "Heat Risk",
       "riskLabel": "Heat Risk",
-      "riskUnavailable": "N/A"
+      "riskUnavailable": "N/A",
+      "a11y": {
+        "label": "{{title}}: {{value}} out of {{max}}, {{level}}.",
+        "labelUnavailable": "{{title}}: not available."
+      }
     },
     "forecast": {
       "xAxisName": "Time",
