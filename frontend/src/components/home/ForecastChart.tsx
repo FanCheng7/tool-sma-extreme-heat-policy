@@ -46,6 +46,8 @@ export function ForecastChart({ points, dayLabel }: ForecastChartProps) {
   return (
     <>
       <Box
+        // Give every day a direct keyboard entry point, including accordion panels.
+        tabIndex={hasTextAlternative ? 0 : undefined}
         role={hasTextAlternative ? "img" : undefined}
         aria-label={
           hasTextAlternative
